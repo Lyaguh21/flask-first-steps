@@ -11,6 +11,7 @@ class Post(db.Model):
     __tablename__ = "posts"
 
     id = db.Column(db.Integer, primary_key = True)
+    author_id = db.Column(db.Integer)
     title = db.Column(db.String(30))
     description = db.Column(db.String(30))
     likes = db.relationship("User", secondary=post_likes, lazy="dynamic")
