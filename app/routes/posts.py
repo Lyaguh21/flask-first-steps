@@ -26,17 +26,29 @@ def post_post():
 
 @posts_bp.get("/posts")
 def get_posts():
+    data = request.get_json(silent=True) or {}
+    user = (data.get("user_id") or None)
+
+    if not (user):
+        return jsonify({"error": "Id пользователя поста не задано"},400)
     posts = list_posts()
-    return jsonify([{id: post.id, "title": post.title, "description": post.description, "created_at": post.created_at, "likes": post.likes.count(), "is_liked": post.likes.filter(User.id == post.author_id).count() > 0 } for post in posts]), 200
+    return jsonify([{"id": post.id,"author_id": post.author_id ,"title": post.title, "description": post.description, "created_at": post.created_at, "likes": post.likes.count(), "is_liked": post.likes.filter(User.id == user).count() > 0 } for post in posts]), 200
 
 @posts_bp.get("/posts/<int:post_id>")
 def get_post(post_id):
+    data = request.get_json(silent=True) or {}
+    user = (data.get("user_id") or None)
+
+    if not (user):
+        return jsonify({"error": "Id пользователя поста не задано"},400)
+
     post = get_post_by_id(post_id)
+
 
     if not post:
         return jsonify({"error": "post not found"}), 400
     
-    return jsonify({"id": post.id, "author_id": post.author_id, "title": post.title, "created_at": post.created_at, "is_liked": False, "likes": 0}), 200    
+    return jsonify({"id": post.id, "author_id": post.author_id, "title": post.title, "created_at": post.created_at, "is_liked": post.likes.filter(User.id == user).count() > 0, "likes": post.likes.count()}), 200    
 
 @posts_bp.post("/posts/<int:post_id>/like")
 def like_post(post_id):
