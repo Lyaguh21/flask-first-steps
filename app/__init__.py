@@ -19,4 +19,7 @@ def create_app():
     
     from .routes.posts import posts_bp
     app.register_blueprint(posts_bp)
+
+    from .routes.pages import pages_bp
+    app.register_blueprint(pages_bp)
     return app
